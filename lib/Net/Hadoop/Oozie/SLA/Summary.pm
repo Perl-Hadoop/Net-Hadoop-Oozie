@@ -203,6 +203,8 @@ __END__
 
 =over 4
 
+=item *
+
 Burak Gursoy C<< burakE<64>cpan.org >>
 
 =item *
