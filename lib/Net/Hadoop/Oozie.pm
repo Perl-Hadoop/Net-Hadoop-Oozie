@@ -111,6 +111,10 @@ has 'filter' => (
     lazy    => 1,
 );
 
+has expand_xml_conf => (
+    is      => 'rw',
+    default => sub { 0 },
+);
 
 #------------------------------------------------------------------------------#
 
@@ -743,6 +747,7 @@ sub _expand_meta_data {
     my $self = shift;
     my ($jobs) = @_;
 
+    my $expand_xml_conf = $self->expand_xml_conf;
     my $uri = URI->new( $self->oozie_uri );
 
     # Jobs is supposed to be a 2-level JSON hash
@@ -765,6 +770,32 @@ sub _expand_meta_data {
     }
 
     %{ $jobs } = %{ unflatten $flat_jobs };
+
+    if ( $expand_xml_conf ) {
+        my $expand = sub {
+            my $data = shift;
+            eval {
+                my $cs = $data->{conf_struct} = xml_in( $data->{conf}, KeepRoot => 1 );
+                1;
+            } or do {
+                my $eval_error = $@ || 'Zombie error';
+                warn "Failed to map the Oozie job configuration to a data structure: $eval_error";
+            };
+        };
+
+        if ( my $conf = $jobs->{conf} ) {
+            if ( ! ref $conf && $conf =~ m{ \A \Q<configuration>\E \s+ \Q<property>\E}xms ) {
+                $expand->( $jobs );
+            }
+        }
+
+        foreach my $action ( @{ $jobs->{actions} } ) {
+            my $conf = $action->{conf} || next;
+            if ( ! ref $conf && $conf =~ m{ \A [<] }xms ) {
+                $expand->( $action );
+            }
+        }
+    }
 
     return;
 }
@@ -797,7 +828,7 @@ sub _jobs_iterator {
     } while $offset < $total;
 
     if ( $total_jobs != $total ) {
-        die "Something is wrong, the collected total workflows and the computed total mismatch ($total_jobs != $total)";
+        warn "Something is wrong, the collected total workflows and the computed total mismatch ($total_jobs != $total)";
     }
 
     return;
