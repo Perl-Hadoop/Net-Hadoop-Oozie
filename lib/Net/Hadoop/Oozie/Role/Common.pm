@@ -26,7 +26,13 @@ has 'oozie_uri' => (
     },
     default => sub {
         my $self = shift;
-        return $ENV{OOZIE_URL} if $ENV{OOZIE_URL};
+        if ( my $env = $ENV{OOZIE_URL} ) {
+            # TODO
+            #if ( $env !~ m{ \A https?:// (.+?) [/] oozie \z }xms ) {
+            #    die "OOZIE_URL=$env is a malformed value!";
+            #}
+            return $env;
+        }
         Carp::confess "oozie_uri not specified and \$ENV{OOZIE_URL} is not set!";
     },
     lazy => 1,
