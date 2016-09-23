@@ -22,6 +22,7 @@ use Constant::FromGlobal DEBUG => { int => 1, default => 0, env => 1 };
 use Net::Hadoop::Oozie::Constants qw(:all);
 
 with 'Net::Hadoop::Oozie::Role::Common';
+with 'Net::Hadoop::Oozie::Role::LWP';
 
 has api_version => (
     is      => 'rw',
