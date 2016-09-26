@@ -195,13 +195,24 @@ __END__
 
 =encoding utf8
 
+=head1 NAME
+
+Net::Hadoop::Oozie::Constants - Oozie SLA Summary
+
+=head1 DESCRIPTION
+
+Part of the Perl Oozie interface.
+
 =head1 SYNOPSIS
 
--
+    use Net::Hadoop::Oozie::SLA::Summary;
+    # TODO
 
-=head1 AUTHORS
+head1 AUTHORS
 
 =over 4
+
+=item *
 
 Burak Gursoy C<< burakE<64>cpan.org >>
 

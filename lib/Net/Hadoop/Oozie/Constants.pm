@@ -160,3 +160,36 @@ sub _build_valid_regex {
 1;
 
 __END__
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Net::Hadoop::Oozie::Constants - Constants for Oozie
+
+=head1 DESCRIPTION
+
+Part of the Perl Oozie interface.
+
+=head1 SYNOPSIS
+
+    use Net::Hadoop::Constants;
+    # TODO
+
+head1 AUTHORS
+
+=over 4
+
+=item *
+
+Burak Gursoy C<< burakE<64>cpan.org >>
+
+=item *
+
+David Morel C<< david.morelE<64>amakuru.net >>
+
+=back
+
+=cut
