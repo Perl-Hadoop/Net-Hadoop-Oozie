@@ -883,7 +883,7 @@ The valid filters are listed below.
 
 =over 4
 
-=item * name
+=item name
 
 The application name from the workflow/coordinator/bundle definition
 
