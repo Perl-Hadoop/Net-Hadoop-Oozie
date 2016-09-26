@@ -60,7 +60,7 @@ Part of the Perl Oozie interface.
     with 'Net::Hadoop::Oozie::Role::Common';
     # TODO
 
-head1 AUTHORS
+=head1 AUTHORS
 
 =over 4
 

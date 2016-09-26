@@ -178,7 +178,7 @@ Part of the Perl Oozie interface.
     use Net::Hadoop::Constants;
     # TODO
 
-head1 AUTHORS
+=head1 AUTHORS
 
 =over 4
 

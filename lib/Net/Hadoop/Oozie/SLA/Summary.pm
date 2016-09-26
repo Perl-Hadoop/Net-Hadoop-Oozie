@@ -208,7 +208,13 @@ Part of the Perl Oozie interface.
     use Net::Hadoop::Oozie::SLA::Summary;
     # TODO
 
-head1 AUTHORS
+=head1 METHODS
+
+=head2 sla_miss_list
+
+TODO.
+
+=head1 AUTHORS
 
 =over 4
 

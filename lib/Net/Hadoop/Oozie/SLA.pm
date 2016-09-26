@@ -203,7 +203,13 @@ Part of the Perl Oozie interface.
     use Net::Hadoop::Oozie::SLA;
     # TODO
 
-head1 AUTHORS
+=head1 METHODS
+
+=head2 sla
+
+TODO.
+
+=head1 AUTHORS
 
 =over 4
 

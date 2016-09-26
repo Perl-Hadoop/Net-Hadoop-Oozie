@@ -178,7 +178,13 @@ Part of the Perl Oozie interface.
     use Net::Hadoop::TheJudge;
     # TODO
 
-head1 AUTHORS
+=head1 METHODS
+
+=head2 question
+
+TODO.
+
+=head1 AUTHORS
 
 =over 4
 

@@ -93,7 +93,13 @@ Part of the Perl Oozie interface.
     with 'Net::Hadoop::Oozie::Role::LWP';
     # TODO
 
-head1 AUTHORS
+=head1 METHODS
+
+=head2 agent_request
+
+TODO.
+
+=head1 AUTHORS
 
 =over 4
 

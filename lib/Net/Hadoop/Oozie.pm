@@ -1089,7 +1089,14 @@ Returns an arrayref of suspended workflows:
         # do something
     }
 
-head1 AUTHORS
+=head3 coordinators_with_the_same_appname_on_the_same_path
+
+Returns a hash consisting of duplicated application names for multiple coordinators.
+Having coordinators like this is usually an user error when submitting jobs.
+
+    my %offenders = $oozie->coordinators_with_the_same_appname_on_the_same_path;
+
+=head1 AUTHORS
 
 =over 4
 
