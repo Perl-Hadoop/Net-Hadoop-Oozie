@@ -1,4 +1,5 @@
 package Net::Hadoop::Oozie::SLA;
+
 use 5.14.2;
 use strict;
 use warnings;
