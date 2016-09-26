@@ -430,13 +430,15 @@ sub active_job_paths {
             push @{ $path{ $hdfs_path } ||= [] },
                 {
                     $this_job->{ $id_name } => {
-                        map { $_ => $this_job->{ $_ } }
-                           @{ $wanted_fields }
+                        (
+                            map { $_ => $this_job->{ $_ } }
+                                @{ $wanted_fields }
+                        ),
+                        ( $re_hdfs_base && $hdfs_path !~ $re_hdfs_base ? (
+                            # shouldn't happen, but you can never know
+                            alien => 1,
+                        ): ()),
                     },
-                    ($re_hdfs_base && $hdfs_path !~ $re_hdfs_base ? (): (
-                        # shouldn't happen, but you can never know
-                        alien => 1,
-                    )),
                 }
             ;
         }
