@@ -1,6 +1,6 @@
 package Net::Hadoop::Oozie::Role::Common;
 
-use 5.18.2;
+use 5.010;
 use strict;
 use warnings;
 

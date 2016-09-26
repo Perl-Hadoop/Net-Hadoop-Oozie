@@ -1,6 +1,6 @@
 package Net::Hadoop::Oozie::TheJudge;
 
-use 5.014;
+use 5.010;
 use strict;
 use warnings;
 

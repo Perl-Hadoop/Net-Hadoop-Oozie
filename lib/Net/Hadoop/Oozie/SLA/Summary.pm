@@ -1,6 +1,6 @@
 package Net::Hadoop::Oozie::SLA::Summary;
 
-use 5.014;
+use 5.010;
 use warnings;
 use strict;
 
