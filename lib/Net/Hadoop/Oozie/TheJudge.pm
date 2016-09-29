@@ -169,6 +169,17 @@ __END__
 
 Net::Hadoop::Oozie::TheJudge - Will tell you the verdict on coordinators
 
+=head1 SYNOPSIS
+
+    my $verdict = Net::Hadoop::Oozie::TheJudge->new->question(
+        len     => 1000,
+        kill    => 20,
+        suspend => 10,
+        coord   => shift(),
+    );
+
+    print $verdict->{text} if $verdict->{guilty};
+
 =head1 DESCRIPTION
 
 Part of the Perl Oozie interface.
@@ -177,6 +188,20 @@ Part of the Perl Oozie interface.
 
     use Net::Hadoop::TheJudge;
     # TODO
+
+=head1 ATTRIBUTES
+
+=head2 oozie
+
+The L<Net::Hadoop::Oozie> instance used to fetch information.
+
+=head2 badge
+
+The name of the cluster.
+
+=head2 name
+
+The name of the program.
 
 =head1 METHODS
 
