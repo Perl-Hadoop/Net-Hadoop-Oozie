@@ -1,6 +1,6 @@
 package Net::Hadoop::Oozie::TheJudge;
 
-use 5.014;
+use 5.010;
 use strict;
 use warnings;
 
@@ -160,3 +160,42 @@ sub question {
 1;
 
 __END__
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Net::Hadoop::Oozie::TheJudge - Will tell you the verdict on coordinators
+
+=head1 DESCRIPTION
+
+Part of the Perl Oozie interface.
+
+=head1 SYNOPSIS
+
+    use Net::Hadoop::TheJudge;
+    # TODO
+
+=head1 METHODS
+
+=head2 question
+
+TODO.
+
+=head1 AUTHORS
+
+=over 4
+
+=item *
+
+Burak Gursoy C<< burakE<64>cpan.org >>
+
+=item *
+
+David Morel C<< david.morelE<64>amakuru.net >>
+
+=back
+
+=cut

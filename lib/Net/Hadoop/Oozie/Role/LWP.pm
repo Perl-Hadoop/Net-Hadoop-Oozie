@@ -1,6 +1,6 @@
 package Net::Hadoop::Oozie::Role::LWP;
 
-use 5.014;
+use 5.010;
 use strict;
 use warnings;
 
@@ -75,3 +75,46 @@ sub agent_request {
 1;
 
 __END__
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Net::Hadoop::Oozie::Role::LWP - User agent for Oozie requests
+
+=head1 DESCRIPTION
+
+Part of the Perl Oozie interface.
+
+=head1 SYNOPSIS
+
+    with 'Net::Hadoop::Oozie::Role::LWP';
+    # TODO
+
+=head1 METHODS
+
+=head2 agent_request
+
+TODO.
+
+=head1 AUTHORS
+
+=over 4
+
+=item *
+
+Burak Gursoy C<< burakE<64>cpan.org >>
+
+=item *
+
+David Morel C<< david.morelE<64>amakuru.net >>
+
+=back
+
+=head1 SEE ALSO
+
+L<Net::Hadoop::Oozie>.
+
+=cut

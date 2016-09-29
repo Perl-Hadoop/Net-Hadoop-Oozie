@@ -1,5 +1,6 @@
 package Net::Hadoop::Oozie;
-use 5.014;
+
+use 5.010;
 use strict;
 use warnings;
 
@@ -21,7 +22,10 @@ use Constant::FromGlobal DEBUG => { int => 1, default => 0, env => 1 };
 
 use Net::Hadoop::Oozie::Constants qw(:all);
 
-with 'Net::Hadoop::Oozie::Role::Common';
+with qw(
+    Net::Hadoop::Oozie::Role::Common
+    Net::Hadoop::Oozie::Role::LWP
+);
 
 has api_version => (
     is      => 'rw',
@@ -111,6 +115,10 @@ has 'filter' => (
     lazy    => 1,
 );
 
+has expand_xml_conf => (
+    is      => 'rw',
+    default => sub { 0 },
+);
 
 #------------------------------------------------------------------------------#
 
@@ -425,13 +433,15 @@ sub active_job_paths {
             push @{ $path{ $hdfs_path } ||= [] },
                 {
                     $this_job->{ $id_name } => {
-                        map { $_ => $this_job->{ $_ } }
-                           @{ $wanted_fields }
+                        (
+                            map { $_ => $this_job->{ $_ } }
+                                @{ $wanted_fields }
+                        ),
+                        ( $re_hdfs_base && $hdfs_path !~ $re_hdfs_base ? (
+                            # shouldn't happen, but you can never know
+                            alien => 1,
+                        ): ()),
                     },
-                    ($re_hdfs_base && $hdfs_path !~ $re_hdfs_base ? (): (
-                        # shouldn't happen, but you can never know
-                        alien => 1,
-                    )),
                 }
             ;
         }
@@ -743,6 +753,7 @@ sub _expand_meta_data {
     my $self = shift;
     my ($jobs) = @_;
 
+    my $expand_xml_conf = $self->expand_xml_conf;
     my $uri = URI->new( $self->oozie_uri );
 
     # Jobs is supposed to be a 2-level JSON hash
@@ -765,6 +776,32 @@ sub _expand_meta_data {
     }
 
     %{ $jobs } = %{ unflatten $flat_jobs };
+
+    if ( $expand_xml_conf ) {
+        my $expand = sub {
+            my $data = shift;
+            eval {
+                my $cs = $data->{conf_struct} = xml_in( $data->{conf}, KeepRoot => 1 );
+                1;
+            } or do {
+                my $eval_error = $@ || 'Zombie error';
+                warn "Failed to map the Oozie job configuration to a data structure: $eval_error";
+            };
+        };
+
+        if ( my $conf = $jobs->{conf} ) {
+            if ( ! ref $conf && $conf =~ m{ \A \Q<configuration>\E \s+ \Q<property>\E}xms ) {
+                $expand->( $jobs );
+            }
+        }
+
+        foreach my $action ( @{ $jobs->{actions} } ) {
+            my $conf = $action->{conf} || next;
+            if ( ! ref $conf && $conf =~ m{ \A [<] }xms ) {
+                $expand->( $action );
+            }
+        }
+    }
 
     return;
 }
@@ -797,7 +834,7 @@ sub _jobs_iterator {
     } while $offset < $total;
 
     if ( $total_jobs != $total ) {
-        die "Something is wrong, the collected total workflows and the computed total mismatch ($total_jobs != $total)";
+        warn "Something is wrong, the collected total workflows and the computed total mismatch ($total_jobs != $total)";
     }
 
     return;
@@ -1051,6 +1088,13 @@ Returns an arrayref of suspended workflows:
     foreach my $wf ( @{ $suspended } ) {
         # do something
     }
+
+=head3 coordinators_with_the_same_appname_on_the_same_path
+
+Returns a hash consisting of duplicated application names for multiple coordinators.
+Having coordinators like this is usually an user error when submitting jobs.
+
+    my %offenders = $oozie->coordinators_with_the_same_appname_on_the_same_path;
 
 =head1 AUTHORS
 

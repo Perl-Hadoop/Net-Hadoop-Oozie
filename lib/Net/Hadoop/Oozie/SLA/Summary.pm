@@ -1,6 +1,6 @@
 package Net::Hadoop::Oozie::SLA::Summary;
 
-use 5.014;
+use 5.010;
 use warnings;
 use strict;
 
@@ -195,9 +195,24 @@ __END__
 
 =encoding utf8
 
+=head1 NAME
+
+Net::Hadoop::Oozie::Constants - Oozie SLA Summary
+
+=head1 DESCRIPTION
+
+Part of the Perl Oozie interface.
+
 =head1 SYNOPSIS
 
--
+    use Net::Hadoop::Oozie::SLA::Summary;
+    # TODO
+
+=head1 METHODS
+
+=head2 sla_miss_list
+
+TODO.
 
 =head1 AUTHORS
 
