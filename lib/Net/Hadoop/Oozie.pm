@@ -972,7 +972,7 @@ Required parameters are listed below.
 
 =item * oozie.wf.application.path
 
-Like /oozie_workflows/myworkflow, must be deployed there already.
+Like F</oozie_workflows/myworkflow>, must be deployed there already.
 
 =item * appName
 
@@ -988,14 +988,14 @@ Optional parameters are listed below.
 
 If you want some variable interpolated in your script (like a date, an int,
 or whatever), pass it in the options you call the method with. if you pass
-foo => 'bar', inside the workflow you will be able to use it as ${foo}.
+C<< foo => 'bar', inside the workflow you will be able to use it as C<${foo}>.
 
 =item Configuration properties
 
 Useful parameters for oozie itself (like the queue name) need AFAICT an
 extra level of handling. they can be set dynamically, but need a tweak in
 the workflow definition itself, in the top config section; for instance, if
-we need to specify mapreduce.job.queuename to assign the tasks to a
+we need to specify C<mapreduce.job.queuename> to assign the tasks to a
 specific fair scheduler queue, we need to declare it in the global configuration
 section, like this:
 
@@ -1004,14 +1004,14 @@ section, like this:
         <value>${queueName}</value>
     </property>
 
-And we will call submit_job() adding this to the options hash:
+And we will call L</submit_job> adding this to the options hash:
 
     queueName => "root.<queue name>"
 
 =back
 
 This method returns a job ID which you can use directly to query the job
-status, with the job(<jobId>) method above, so you can launch a job from a
+status, with the L</job> method above, so you can launch a job from a
 script, and have a loop query the job status at regular intervals (be nice,
 please) to check when it's done (untested code :-).
 
@@ -1052,13 +1052,15 @@ please) to check when it's done (untested code :-).
 
 =head3 active_job_paths
 
+=head3 coordinators_with_the_same_appname_on_the_same_path
+
 =head3 failed_workflows_last_n_hours
 
 =head3 failed_workflows_last_n_hours_pretty
 
 =head3 job_exists
 
-This is a sugar interface on top of C<job> method. Normally the REST interface
+This is a sugar interface on top of the L</job> method. Normally the REST interface
 just dies with an C<HTTP 400> message on missing jobs. This method won't die
 and will return the data set if there is a proper response from the service.
 It will return false otherwise.
