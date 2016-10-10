@@ -307,24 +307,42 @@ sub submit_job {
     return $res->{id}; 
 }
 
-sub suspended_workflows {
+sub _collect_suspended {
     my $self = shift;
-    my @param;
+    my $opt  = shift || {};
+
+    die "Options need to be a HASH" if ! is_hashref $opt;
+
+    my $is_coord = $opt->{is_coord};
+    my $key      = $is_coord ? 'coordinatorjobs' : 'workflows';
+
     $self->filter( { status => [qw( SUSPENDED )] } );
 
     my(@wanted);
+
     $self->_jobs_iterator(
-        jobtype => '',
+        jobtype => $is_coord ? 'coordinators' : '',
         {
+            ( $is_coord ? (
+            is_coordinator => 1,
+            ):()),
             callback => sub {
                 my $job = shift;
-                return if ! $job->{workflows};
-                push @wanted, @{ $job->{workflows} };
-            }
+                return if ! $job->{ $key };
+                push @wanted, @{ $job->{ $key } };
+            },
         }
     );
 
     return \@wanted;
+}
+
+sub suspended_workflows {
+    shift->_collect_suspended;
+}
+
+sub suspended_coordinators {
+    shift->_collect_suspended({ is_coord => 1 });
 }
 
 sub active_coordinators {
