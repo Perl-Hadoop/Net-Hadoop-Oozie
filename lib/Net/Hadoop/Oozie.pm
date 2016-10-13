@@ -1100,6 +1100,15 @@ a coordinator):
         # do something
     }
 
+=head3 suspended_coordinators
+
+Returns an arrayref of suspended coordinators:
+
+    my $suspended = $oozie->suspended_coordinators;
+    foreach my $coord ( @{ $suspended } ) {
+        # do something
+    }
+
 =head3 suspended_workflows
 
 Returns an arrayref of suspended workflows:
