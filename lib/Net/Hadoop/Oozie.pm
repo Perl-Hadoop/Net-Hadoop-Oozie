@@ -1006,7 +1006,7 @@ Optional parameters are listed below.
 
 If you want some variable interpolated in your script (like a date, an int,
 or whatever), pass it in the options you call the method with. if you pass
-C<< foo => 'bar', inside the workflow you will be able to use it as C<${foo}>.
+C<< foo =E<62> 'bar', >> inside the workflow you will be able to use it as C<${foo}>.
 
 =item Configuration properties
 
