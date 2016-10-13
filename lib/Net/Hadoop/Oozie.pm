@@ -1072,6 +1072,11 @@ please) to check when it's done (untested code :-).
 
 =head3 coordinators_with_the_same_appname_on_the_same_path
 
+Returns a hash consisting of duplicated application names for multiple coordinators.
+Having coordinators like this is usually an user error when submitting jobs.
+
+    my %offenders = $oozie->coordinators_with_the_same_appname_on_the_same_path;
+
 =head3 failed_workflows_last_n_hours
 
 =head3 failed_workflows_last_n_hours_pretty
@@ -1117,12 +1122,5 @@ Returns an arrayref of suspended workflows:
     foreach my $wf ( @{ $suspended } ) {
         # do something
     }
-
-=head3 coordinators_with_the_same_appname_on_the_same_path
-
-Returns a hash consisting of duplicated application names for multiple coordinators.
-Having coordinators like this is usually an user error when submitting jobs.
-
-    my %offenders = $oozie->coordinators_with_the_same_appname_on_the_same_path;
 
 =cut
