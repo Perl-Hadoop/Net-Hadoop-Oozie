@@ -1,4 +1,7 @@
 Revision history for Net-Hadoop-Oozie
 
 {{$NEXT}}
+    - New method suspended_coordinators()
+
+0.101 2016-09-26 BURAK
     - Initial release.
