@@ -60,20 +60,6 @@ Part of the Perl Oozie interface.
     with 'Net::Hadoop::Oozie::Role::Common';
     # TODO
 
-=head1 AUTHORS
-
-=over 4
-
-=item *
-
-Burak Gursoy C<< burakE<64>cpan.org >>
-
-=item *
-
-David Morel C<< david.morelE<64>amakuru.net >>
-
-=back
-
 =head1 SEE ALSO
 
 L<Net::Hadoop::Oozie>.

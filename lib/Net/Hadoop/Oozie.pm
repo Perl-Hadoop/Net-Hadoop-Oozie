@@ -1125,26 +1125,4 @@ Having coordinators like this is usually an user error when submitting jobs.
 
     my %offenders = $oozie->coordinators_with_the_same_appname_on_the_same_path;
 
-=head1 AUTHORS
-
-=over 4
-
-=item *
-
-Burak Gursoy C<< burakE<64>cpan.org >>
-
-=item *
-
-David Morel C<< david.morelE<64>amakuru.net >>
-
-=item *
-
-Eric Herman C<< ericE<64>freesa.org >>
-
-=item *
-
-Rafael Garcia-Suarez C<< rgarciasuarezE<64>gmail.com >>
-
-=back
-
 =cut

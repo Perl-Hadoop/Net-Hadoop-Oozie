@@ -209,18 +209,4 @@ The name of the program.
 
 TODO.
 
-=head1 AUTHORS
-
-=over 4
-
-=item *
-
-Burak Gursoy C<< burakE<64>cpan.org >>
-
-=item *
-
-David Morel C<< david.morelE<64>amakuru.net >>
-
-=back
-
 =cut

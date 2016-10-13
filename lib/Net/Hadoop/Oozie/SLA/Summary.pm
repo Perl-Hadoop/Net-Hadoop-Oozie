@@ -214,20 +214,6 @@ Part of the Perl Oozie interface.
 
 TODO.
 
-=head1 AUTHORS
-
-=over 4
-
-=item *
-
-Burak Gursoy C<< burakE<64>cpan.org >>
-
-=item *
-
-David Morel C<< david.morelE<64>amakuru.net >>
-
-=back
-
 =head1 SEE ALSO
 
 L<Net::Hadoop::Oozie>, L<Net::Hadoop::Oozie::SLA>.
