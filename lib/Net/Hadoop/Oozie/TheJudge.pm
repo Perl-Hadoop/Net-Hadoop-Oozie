@@ -142,7 +142,7 @@ sub question {
                 ;
     }
 
-    $out .= sprintf qq{\n\nOozie console:\n\nhttp://%s/?job=%s\n},
+    $out .= sprintf qq{\n\nOozie console:\n\n%s/?job=%s\n},
                         $oozie->oozie_uri,
                         $job_id,
             ;
