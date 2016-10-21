@@ -1,6 +1,8 @@
 Revision history for Net-Hadoop-Oozie
 
 {{$NEXT}}
+
+0.103 2016-10-21 BURAK
     - Fix the console url for the judge
 
 0.102 2016-10-13 BURAK
