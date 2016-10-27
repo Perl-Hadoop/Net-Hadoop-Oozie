@@ -505,11 +505,12 @@ sub active_job_paths {
 #
 sub coordinators_with_the_same_appname_on_the_same_path {
     my $self  = shift;
-    my $path  = $self->active_job_paths('coordinator');
+    my $apath = $self->active_job_paths('coordinator');
+
     my $multi = {
-        map  { $_ => $path->{$_} }
-        grep { @{ $path->{$_} } > 1 }
-        keys %{ $path }
+        map  { $_ => $apath->{$_} }
+        grep { @{ $apath->{$_} } > 1 }
+        keys %{ $apath }
     };
 
     my $dupe = {};
@@ -525,6 +526,30 @@ sub coordinators_with_the_same_appname_on_the_same_path {
     return map   { $_ => $dupe->{$_}    }
            grep  { @{ $dupe->{$_} } > 1 }
            keys %{ $dupe };
+}
+
+sub coordinators_on_the_same_path {
+    my $self  = shift;
+    my $apath = $self->active_job_paths('coordinator');
+
+    my $multi = {
+        map  { $_ => $apath->{$_} }
+        grep { @{ $apath->{$_} } > 1 }
+        keys %{ $apath }
+    };
+
+    my %rv;
+    for my $path ( keys %{ $multi } ) {
+        for my $coord ( @{ $multi->{ $path } }) {
+            foreach my $cid ( keys %{ $coord } ) {
+                my $meta = $coord->{ $cid };
+                # filter status=RUNNING?
+                $rv{ $path }{ $cid } = $meta->{ coordJobName };
+            }
+        }
+    }
+
+    return %rv;
 }
 
 # param 1 : fractional hours
@@ -1069,6 +1094,8 @@ please) to check when it's done (untested code :-).
 =head3 active_coordinators
 
 =head3 active_job_paths
+
+=head3 coordinators_on_the_same_path
 
 =head3 coordinators_with_the_same_appname_on_the_same_path
 
