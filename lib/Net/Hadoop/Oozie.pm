@@ -1007,7 +1007,7 @@ applied from the end of the list.
 =head3 submit_job
 
 For details about job submission through REST, see
-L<https://oozie.apache.org/docs/4.0.0/WebServicesAPI.html#Job_Submission>.
+L<https://oozie.apache.org/docs/4.2.0/WebServicesAPI.html#Job_Submission>.
 
 Required parameters are listed below.
 
