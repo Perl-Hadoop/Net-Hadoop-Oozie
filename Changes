@@ -1,6 +1,8 @@
 Revision history for Net-Hadoop-Oozie
 
 {{$NEXT}}
+
+0.104 2016-10-28 burak
     - New method coordinators_on_the_same_path()
 
 0.103 2016-10-21 BURAK
