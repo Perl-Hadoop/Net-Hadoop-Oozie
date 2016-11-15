@@ -556,9 +556,21 @@ sub coordinators_on_the_same_path {
 # param 2 : pattern for appname filtering
 
 sub failed_workflows_last_n_hours {
-    my $self = shift;
-    my ($n_hours, $pattern) = @_;
-    $n_hours ||= 1;
+    my $self    = shift;
+    my $n_hours = shift || 1;
+    my $pattern = shift;
+    my $opt     = shift || {
+                    parent_info => 1,
+                };
+
+    confess "Options need to be a hash" if ! is_hashref $opt;
+
+    # can be slow to collect if there are too many coordinators
+    # as there will be a single api request per coordinator id
+    # might be good to investigate a bulk request for that.
+    #
+    my $want_parent_info = $opt->{parent_info};
+
     $self->filter( { status => [qw(FAILED SUSPENDED KILLED)] } );
     my $jobs = $self->jobs(jobtype => 'workflows');
 
@@ -597,7 +609,7 @@ sub failed_workflows_last_n_hours {
                 // "";
 
             # This workflow was triggered by a coordinator, let's get some info
-            if ($parent_id) {
+            if ($parent_id && $want_parent_info ) {
                 $parent_id =~ s/\@[0-9]+$//;
                 my $parent = $self->job($parent_id);
                 $workflow->{parentConsoleUrl}
