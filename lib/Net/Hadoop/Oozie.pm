@@ -143,6 +143,24 @@ sub build_version {
     return $version;
 }
 
+sub oozie_version {
+    my $self = shift;
+    my $build = $self->build_version;
+    my($v) = split m{ [-] }xms, $build, 2;
+    return $v;
+}
+
+sub max_node_name_len {
+    my $self    = shift;
+    my $version = $self->oozie_version;
+
+    # A simple grep in oozie.git shows that it was always set to "50"
+    # up until v4.3.0. So, no need to check any older version for even
+    # lower limits.
+
+    return $version ge '4.3.0' ? 128 : 50;
+}
+
 # Takes a hash[ref] for the options
 
 sub jobs {
@@ -1133,6 +1151,58 @@ It will return false otherwise.
     else {
         warn "No such job: $id";
     }
+
+=head3 max_node_name_len
+
+Returns the value of the hardcoded (in Oozie Java code) C<MAX_NODE_NAME_LEN>
+value by probing the Oozie server version. This is the maximum length of
+an Oozie action name that can be in your workflow definitions. If longer action
+names are deployed and scheduled, then the Oozie server will happily schedule a
+coordinator but the individual workflow runs will throw exceptions and and no
+part of the job will get executed. Also note that (if you didn't guess already)
+oozie validation function will validate and pass such names (unless you have
+a recent Oozie version which pushes the validation on the server side).
+
+The relevant part in the Oozie source:
+
+    core/src/main/java/org/apache/oozie/util/ParamChecker.java
+    private static final int MAX_NODE_NAME_LEN = {Integer};
+
+Currently there is no way to probe the value of this constant through the APIs,
+but it is possible to map a limit to certain Oozie versions.
+
+Oozie version C<4.3.0> and later sets the limit to C<128> while anything older
+than that will have the value C<50> (for the time being).
+
+This method, checks the Oozie server version and returns the relevant limit for
+that version.
+
+See these Oozie Jira tickets for more information:
+
+=over 4
+
+=item *
+
+L<https://issues.apache.org/jira/browse/OOZIE-2025>.
+
+=item *
+
+L<https://issues.apache.org/jira/browse/OOZIE-2168>.
+
+=back
+
+Checking the limit is especially important if you are deploying the Oozie jobs
+with custom code generators (instead of hand writing all of the XML) and this
+helper method will give you the ability to display meaningful exceptions to the
+users, instead of the obscure Oozie ones in the Oozie console.
+
+=head3 oozie_version
+
+Just a sugor interface on top of C<build_version> trying to return the actual
+numerical C<Oozie> version without the build string.
+
+    my $oozie_version = $oozie->oozie_version;
+    # Something like "4.1.0"
 
 =head3 standalone_active_workflows
 
