@@ -1,6 +1,8 @@
 Revision history for Net-Hadoop-Oozie
 
 {{$NEXT}}
+
+0.105 2016-11-15 burak
     - Parent job meta data colelction for failed_workflows_last_n_hours() is now optional.
 
 0.104 2016-10-28 burak
