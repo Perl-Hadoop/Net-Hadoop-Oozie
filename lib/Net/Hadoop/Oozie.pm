@@ -120,6 +120,11 @@ has expand_xml_conf => (
     default => sub { 0 },
 );
 
+has shortcircuit_via_callback => (
+    is      => 'rw',
+    default => sub { 0 },
+);
+
 #------------------------------------------------------------------------------#
 
 # API
@@ -346,8 +351,9 @@ sub _collect_suspended {
             ):()),
             callback => sub {
                 my $job = shift;
-                return if ! $job->{ $key };
+                return 1 if ! $job->{ $key };
                 push @wanted, @{ $job->{ $key } };
+                return 1;
             },
         }
     );
@@ -379,7 +385,7 @@ sub active_coordinators {
         sub {
             my $job = shift;
             push @wanted, @{ $job->{coordinatorjobs} };
-            return;
+            return 1;
         }
     };
 
@@ -421,6 +427,7 @@ sub standalone_active_workflows {
                 }
                 grep { ! $_->{parentId} }
                     @{ $job->{workflows} };
+            return 1;
         }
     };
 
@@ -482,7 +489,7 @@ sub active_job_paths {
             ;
         }
 
-        return;
+        return 1;
     };
 
     my @status = qw/
@@ -502,7 +509,7 @@ sub active_job_paths {
                     'coordJobPath',
                     [qw( coordJobName status )],
                 );
-                return;
+                return 1;
             },
         });
     }
@@ -814,7 +821,7 @@ sub _make_full_uri {
     $uri->query_form( [ @base_params, ($filter_string ? (filter => $filter_string) : ()) ] );
     $uri->path( sprintf "%s/%s/%s", $uri->path,$self->api_version, $endpoint );
 
-    print "URI: $uri\n" if DEBUG;
+    printf STDERR "URI: %s\n", $uri if DEBUG;
 
     return $uri;
 }
@@ -891,6 +898,8 @@ sub _jobs_iterator {
 
     my($len, $offset, $total, $total_jobs);
     my $key = $opt->{is_coordinator} ? 'coordinatorjobs' : 'workflows';
+    my $shortcircuit = $self->shortcircuit_via_callback;
+    my $eof;
 
     do {
         my $jobs = $self->jobs(
@@ -903,8 +912,22 @@ sub _jobs_iterator {
         ($len, $offset, $total) = @{ $jobs }{qw/ len offset total /};
         $total_jobs += $jobs->{ $key } ? @{$jobs->{ $key }} : 0; # len overflow
         $offset     += $len;
-        $cb->( $jobs );
-    } while $offset < $total;
+
+        my $rv = $cb->( $jobs );
+
+        next if ! $shortcircuit;
+
+        # If the option above is enabled, then the callback always need to
+        # return true to be able to continue.
+        #
+        if ( ! $rv ) {
+            if ( DEBUG ) {
+                printf STDERR "_jobs_iterator(short-circuit): callback returned false.\n";
+            }
+            $eof = 1;
+        }
+
+    } while ! $eof && $offset < $total;
 
     if ( $total_jobs != $total ) {
         warn "Something is wrong, the collected total workflows and the computed total mismatch ($total_jobs != $total)";
