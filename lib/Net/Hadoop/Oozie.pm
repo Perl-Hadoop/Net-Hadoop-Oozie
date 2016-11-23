@@ -929,7 +929,7 @@ sub _jobs_iterator {
 
     } while ! $eof && $offset < $total;
 
-    if ( $total_jobs != $total ) {
+    if ( !$shortcircuit && $total_jobs != $total ) {
         warn "Something is wrong, the collected total workflows and the computed total mismatch ($total_jobs != $total)";
     }
 
