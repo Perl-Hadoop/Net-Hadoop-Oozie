@@ -913,18 +913,18 @@ sub _jobs_iterator {
         $total_jobs += $jobs->{ $key } ? @{$jobs->{ $key }} : 0; # len overflow
         $offset     += $len;
 
-        my $rv = $cb->( $jobs );
+        my $ok = $cb->( $jobs );
 
-        next if ! $shortcircuit;
-
-        # If the option above is enabled, then the callback always need to
-        # return true to be able to continue.
-        #
-        if ( ! $rv ) {
-            if ( DEBUG ) {
-                printf STDERR "_jobs_iterator(short-circuit): callback returned false.\n";
+        if ( $shortcircuit ) {
+            # If the option above is enabled, then the callback always need to
+            # return true to be able to continue.
+            #
+            if ( ! $ok ) {
+                if ( DEBUG ) {
+                    printf STDERR "_jobs_iterator(short-circuit): callback returned false.\n";
+                }
+                $eof = 1;
             }
-            $eof = 1;
         }
 
     } while ! $eof && $offset < $total;
