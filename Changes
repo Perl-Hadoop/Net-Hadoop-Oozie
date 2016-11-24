@@ -1,6 +1,8 @@
 Revision history for Net-Hadoop-Oozie
 
 {{$NEXT}}
+
+0.109 2016-11-24 BURAK
     - Remove the next as it can't be used to skip the iteration and causing weird errors in return.
 
 0.108 2016-11-24 CANRANGOU
