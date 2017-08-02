@@ -71,7 +71,7 @@ sub agent_request {
                     ? "$1 "
                     : ''
                     ;
-    my $extramsg;
+    my $extramsg = '';
     if ( $code == 401 ) {
         $extramsg = ( $headers->{'www-authenticate'} || '' ) eq 'Negotiate'
                     ? eval { require LWP::Authen::Negotiate; 1; }
