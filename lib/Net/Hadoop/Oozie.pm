@@ -1196,6 +1196,10 @@ It will return false otherwise.
         warn "No such job: $id";
     }
 
+=head3 kerberos_enabled
+
+Returns true if kerberos is enabled
+
 =head3 max_node_name_len
 
 Returns the value of the hardcoded (in Oozie Java code) C<MAX_NODE_NAME_LEN>
