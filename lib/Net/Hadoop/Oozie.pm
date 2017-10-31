@@ -142,6 +142,27 @@ sub admin {
     return $self->agent_request( $self->_make_full_uri( $ep ) );
 }
 
+sub kerberos_enabled {
+    # All relevant config keys:
+    #
+    # oozie.authentication.kerberos.keytab
+    # oozie.authentication.kerberos.name.rules
+    # oozie.authentication.kerberos.principal
+    # oozie.authentication.type
+    # oozie.server.authentication.type
+    # oozie.service.HadoopAccessorService.kerberos.enabled
+    # oozie.service.HadoopAccessorService.kerberos.principal
+    # oozie.service.HadoopAccessorService.keytab.file
+    #
+
+    state $krb_key = 'oozie.service.HadoopAccessorService.kerberos.enabled';
+    my $self = shift;
+    my $conf = $self->admin('configuration')
+                    || confess "Failed to collect admin/configuration";
+    my $krb_val = $conf->{ $krb_key } || return;
+    return $krb_val eq 'true';
+}
+
 sub build_version {
     my $self = shift;
     my $version = $self->admin("build-version")->{buildVersion};
