@@ -67,20 +67,22 @@ sub agent_request {
 
     my $headers = $response->headers;
     my $code    = $response->code;
-    my $info    = $content =~ m{\Q<b>description</b>\E\s+<u>(.+?)</u>}xmsi
-                    ? "$1 "
-                    : ''
-                    ;
-    my $extramsg = '';
-    if ( $code == 401 ) {
-        $extramsg = ( $headers->{'www-authenticate'} || '' ) eq 'Negotiate'
-                    ? eval { require LWP::Authen::Negotiate; 1; }
-                        ? q{ (Did you forget to run kinit?) }
-                        : q{ (LWP::Authen::Negotiate doesn't seem available) }
-                    : '';
-    }
 
-    confess sprintf '%s%s -> %s', $info . $extramsg, $response->status_line, $uri;
+    # collect additional error info
+    my @msg;
+    push @msg, $1
+      if $content =~ m{\Q<b>description</b>\E\s+<u>(.+?)</u>}xmsi;
+
+    push @msg, $headers->{'oozie-error-message'}
+      if $headers->{'oozie-error-message'};
+
+    push @msg, eval { require LWP::Authen::Negotiate; 1; }
+      ? q{(Did you forget to run kinit?)}
+      : q{(LWP::Authen::Negotiate doesn't seem available)}
+      if $code == 401
+          && ( $headers->{'www-authenticate'} || '' ) eq 'Negotiate';
+
+    confess sprintf '%s %s -> %s', "@msg", $response->status_line, $uri;
 }
 
 1;
