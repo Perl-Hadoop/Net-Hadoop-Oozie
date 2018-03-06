@@ -157,7 +157,7 @@ sub question {
     # optionally with a weight like (0.9 ^ days(time - lastModifiedEpoch))
 }
 
-1;
+'Drokk';
 
 __END__
 
@@ -183,6 +183,9 @@ Net::Hadoop::Oozie::TheJudge - Will tell you the verdict on coordinators
 =head1 DESCRIPTION
 
 Part of the Perl Oozie interface.
+
+It is named after Judge Dredd, who is empowered to summarily arrest,
+convict, sentence, and execute criminals.
 
 =head1 SYNOPSIS
 
