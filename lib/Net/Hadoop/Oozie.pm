@@ -769,6 +769,23 @@ sub kill {
     return 1;
 }
 
+sub resume {
+    my $self = shift;
+    my ( $id, $debug ) = @_;
+    my $saved_action = $self->action();
+    $self->action('resume');
+
+    my $error;
+    my $uri = $self->_make_full_uri( 'job/' . $id );
+    my $res = eval { $self->agent_request( $uri, 'put' ) } or do {
+        $error = $@;
+        warn "oozie server returned an error:\n$error";
+    };
+    $self->action($saved_action);
+    return if $error;
+    return 1;
+}
+
 #------------------------------------------------------------------------------#
 
 sub _process_filters {
@@ -813,7 +830,7 @@ sub _make_full_uri {
     # very few params accepted for 'job', more for other reqs
     # only 1 param for some job actions (the rest bypasses this old mechanism
     # by injecting in URI directly, urgh)
-    if ( $endpoint =~ /^job\// && $self->action =~ /^(coord-rerun|kill)$/ ) {
+    if ( $endpoint =~ /^job\// && $self->action =~ /^(coord-rerun|kill|resume)$/ ) {
         @accepted_params = qw( action );
     }
     elsif ( $endpoint =~ /^job\// ) {
@@ -1077,6 +1094,8 @@ applied from the end of the list.
 =head3 jobs
 
 =head3 kill
+
+=head3 resume
 
 =head3 submit_job
 
