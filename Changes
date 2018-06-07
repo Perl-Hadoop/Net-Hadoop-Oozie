@@ -1,6 +1,11 @@
 Revision history for Net-Hadoop-Oozie
 
 {{$NEXT}}
+
+0.114 2018-06-07 BOOK
+    - add support for resuming suspended jobs
+
+0.113 2018-03-06 BOOK
     - Collect and show more information when throwing an Oozie error
     - minor POD updates
 
