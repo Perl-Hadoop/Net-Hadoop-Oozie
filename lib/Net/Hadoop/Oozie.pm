@@ -996,68 +996,71 @@ sub failed_workflows_nr {
     return scalar( grep { $self->failed_last_n_hours( $_, $n_hours ) } @{$jobs->{workflows}} );
 }
 
-sub failed_workflows_last_n_hours_ng {
+sub failed_workflows_last_n_hours_paged {
     my $self    = shift;
     my $n_hours = shift || 1;
     my $pattern = shift;
-    my $opt     = shift || { parent_info => 1,};
-    my $want_parent_info = $opt->{parent_info};
-    my $page_size = $opt->{page_size} // 50;
-    my $page_nr =  $opt->{page_nr} // 1 ;
-    my @failed;
-    my $current_pos = 1;
-    my $console_url_base;
+    my $opt     = shift || { parent_info => 1 };
 
+    my $want_parent_info   = $opt->{parent_info};
+    my $page_size          = $opt->{page_size} // 50;
+    my $page_nr            = $opt->{page_nr}   //  1;
+    my $current_pos        = 1;
     my $failed_workflow_nr = $self->failed_workflows_nr( $n_hours );
-    my $total_page_nr = ceil( $failed_workflow_nr/$page_size );
+    my $total_page_nr      = ceil( $failed_workflow_nr/$page_size );
+
     $page_nr = $total_page_nr if $page_nr>$total_page_nr;
 
-    $self->_jobs_iterator(
-        {
-            is_coordinator => 0,
-            callback => sub {
-                my $jobs = shift;
-                my $workflows = $jobs->{workflows};
-                for my $workflow ( @$workflows ){
-                    next if ($pattern && $workflow->{appName} !~ /$pattern/);
-                    if ( $self->failed_last_n_hours($workflow,$n_hours) )
-                        {
-                            if( $current_pos <= $page_size * ($page_nr-1) ){
-                                $current_pos ++;
-                                next;
-                            }
-                            if ( !$console_url_base ) {
-                                ( $console_url_base = $workflow->{consoleUrl} ) =~ s/job=.*/job=/;
-                            }
-                            my $details =  $self->job( $workflow->{id} );
-                            my ($error) = map { $_->{errorMessage} ? $_->{errorMessage} : () } @{$details->{actions}||[]};
-                            my $conf = eval { xml_in($details->{conf}) } || {};
-                            for (qw(timeoutSkipErrorMail errorEmailTo)) {
-                                $workflow->{$_} = $conf->{property}{$_}{value};
-                            }
-                            my $parent_id = $workflow->{parentId} = $details->{parentId}
-                                            // "";
-                            if ($parent_id && $want_parent_info ) {
-                                $parent_id =~ s/\@[0-9]+$//;
-                                my $parent = $self->job($parent_id);
-                                $workflow->{parentConsoleUrl}
-                                    = $parent->{coordJobId}
-                                    ? $console_url_base . $parent->{coordJobId}
-                                    : 'not found';
-                                $workflow->{parentStatus}  = $parent->{status};
-                                $workflow->{parentAppname} = $parent->{coordJobName};
-                                $workflow->{parentId}      = $parent->{coordJobId};
-                                $workflow->{scheduled}++;
-                            }
-                            $workflow->{errorMessage}  = $error || '-';
-                            push @failed, $workflow;
-                            return if scalar(@failed) >= $page_size || scalar(@failed) >= $failed_workflow_nr - $page_size*($page_nr-1);
-                        }
+    my(@failed, $console_url_base);
+    my $cb = sub {
+        my $jobs = shift;
+        my $workflows = $jobs->{workflows};
+        for my $workflow ( @$workflows ){
+            next if ($pattern && $workflow->{appName} !~ /$pattern/);
+            if ( $self->failed_last_n_hours($workflow,$n_hours) )
+                {
+                    if( $current_pos <= $page_size * ($page_nr-1) ){
+                        $current_pos ++;
+                        next;
+                    }
+                    if ( !$console_url_base ) {
+                        ( $console_url_base = $workflow->{consoleUrl} ) =~ s/job=.*/job=/;
+                    }
+                    my $details =  $self->job( $workflow->{id} );
+                    my ($error) = map { $_->{errorMessage} ? $_->{errorMessage} : () } @{$details->{actions}||[]};
+                    my $conf = eval { xml_in($details->{conf}) } || {};
+                    for (qw(timeoutSkipErrorMail errorEmailTo)) {
+                        $workflow->{$_} = $conf->{property}{$_}{value};
+                    }
+                    my $parent_id = $workflow->{parentId} = $details->{parentId}
+                                    // "";
+                    if ($parent_id && $want_parent_info ) {
+                        $parent_id =~ s/\@[0-9]+$//;
+                        my $parent = $self->job($parent_id);
+                        $workflow->{parentConsoleUrl}
+                            = $parent->{coordJobId}
+                            ? $console_url_base . $parent->{coordJobId}
+                            : 'not found';
+                        $workflow->{parentStatus}  = $parent->{status};
+                        $workflow->{parentAppname} = $parent->{coordJobName};
+                        $workflow->{parentId}      = $parent->{coordJobId};
+                        $workflow->{scheduled}++;
+                    }
+                    $workflow->{errorMessage}  = $error || '-';
+                    push @failed, $workflow;
+                    if (
+                        @failed >= $page_size
+                        || @failed >= $failed_workflow_nr - $page_size*($page_nr-1)
+                    ) {
+                        return;
+                    }
                 }
-                return 1;
-            }
         }
-    );
+        return 1;
+    };
+
+    $self->_jobs_iterator({ is_coordinator => 0, callback => $cb });
+
     return ( $total_page_nr, $page_nr, \@failed );
 }
 
@@ -1286,7 +1289,33 @@ Having coordinators like this is usually an user error when submitting jobs.
 
 =head3 failed_workflows_last_n_hours
 
+    my %options = ( # all keys are optional
+        parent_info => Bool, # default: 1
+    );
+
+    my $failed_arrayref = $oozie->failed_workflows_last_n_hours( $hours, $pattern, \%options );
+
 =head3 failed_workflows_last_n_hours_pretty
+
+    my $string = $oozie->failed_workflows_last_n_hours_pretty( $hours );
+
+=head3 failed_workflows_last_n_hours_paged
+
+    my %options = ( # all keys are optional
+        parent_info => Bool, # default: 1
+        page_size   => Int,  # default: 50
+        page_nr     => Int,  # default: 1
+    );
+
+    my(
+        $total_page_nr,
+        $page_nr,
+        $failed_arrayref,
+    ) = $oozie->failed_workflows_last_n_hours_paged(
+            $hours,
+            $pattern,
+            \%options,
+        );
 
 =head3 job_exists
 
