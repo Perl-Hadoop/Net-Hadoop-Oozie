@@ -1,6 +1,7 @@
 Revision history for Net-Hadoop-Oozie
 
 {{$NEXT}}
+    - New method failed_workflows_last_n_hours_paged for paged error reporting.
 
 0.114 2018-06-07 BOOK
     - add support for resuming suspended jobs
