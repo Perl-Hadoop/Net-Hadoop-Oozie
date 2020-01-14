@@ -16,7 +16,7 @@ use constant JOB_OPTIONS => qw(
 );
 
 use constant COORD_STATUS => qw(
-    DONWITHERROR
+    DONEWITHERROR
     FAILED
     KILLED
     PAUSED
